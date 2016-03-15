@@ -44,6 +44,7 @@ windowDef Desktop
 		namedEvent "hideBrackets";
 		namedEvent "weaponChange";
 		namedEvent "radioChatterDown";
+		namedEvent "updateGravity";   //add gravity
 	}
 	
 	onNamedEvent hideHud {
@@ -52,7 +53,8 @@ windowDef Desktop
 		set "p_armor::visible" "0" ;
 		set "p_health::visible" "0" ;
 		set "p_weapswitch::visible" "0" ;
-		set "powerups::visible" "0" ;		
+		set "powerups::visible" "0" ;
+		set "p_gravity::visible" "0";	//minimized hud
 	}
 	
 	onNamedEvent showHud {
@@ -61,7 +63,8 @@ windowDef Desktop
 		set "p_armor::visible" "1" ;
 		set "p_health::visible" "1" ;
 		set "p_weapswitch::visible" "1" ;
-		set "powerups::visible" "1" ;	
+		set "powerups::visible" "1" ;
+		set "p_gravity::visible" "1";	//show gravity meter			
 	}
 	
 	onNamedEvent removeDeathLine {
@@ -179,6 +182,39 @@ windowDef Desktop
 		if ( "gui::player_armordelta" < 0 )
 		{
 			resettime "armor_amount" "0" ;
+		}
+	}
+
+	//------------------------
+	//SET GRAVITY EVENT
+	//------------------------
+	onNamedEvent updateGravity {
+		if ( "gui::mp" == 0 )
+		{
+			if ( "gui::player_gravitypct" < 0.26 )
+			{
+				set "gravity_valbar::matcolor" "1,0.3,0,0.35" ;
+				set "gravity_val::matcolor" "1,0.3,0,0.5" ;
+				set "gravity_ekg::matcolor" "0.3,0.05,0,1" ;
+				set "gravity_backbar_add::visible" "1" ;
+			} else	{
+				set "gravity_valbar::matcolor" "0.698,0.811,0.427,0.2" ;
+				set "gravity_val::matcolor" "0.698,0.811,0.427,0.35" ;
+				set "gravity_ekg::matcolor" "0.0862,0.105,0.0549,1" ;
+				set "gravity_backbar_add::visible" "0" ;
+			}	
+		} else {
+			if ( "gui::player_gravitypct" < 0.26 )
+			{
+				set "health_gravity_add_mp::visible" "1" ;
+			} else	{
+				set "health_gravity_add_mp::visible" "0" ;
+			}	
+		}
+	
+		if ( "gui::player_gravitydelta" < 0 )
+		{
+			resettime "gravity_amount" "0" ;
 		}
 	}
 	
@@ -785,7 +821,96 @@ windowDef Desktop
 			shear	0,-.22
 		}
 	}
-	
+
+
+//------------------------
+//SET GRAVITY
+//------------------------	
+windowDef p_gravity
+	{
+		rect	190,0,640,480
+		visible	("gui::mp" == 0 )
+		windowDef gravity_backbar
+		{
+			rect	190,420,125,59
+			visible	1
+			background	"gfx/guis/hud/backbar"
+			matcolor	0,0,0,0.5
+			shear	0,-.22
+		}
+		windowDef gravity_valbar
+		{
+			rect	190,420,125,59
+			visible	1
+			background	"gfx/guis/hud/valbar"
+			matcolor	0.701,0.815,0.431,0.2
+			shear	0,-.22
+		}
+		windowDef gravity_ekg
+		{
+			rect	190,420,125,59
+			visible	1
+			background	"gfx/guis/hud/ekg"
+			matcolor	0.0862,0.105,0.0549,1
+			shear	0,-.22
+		}
+		windowDef p_gravity_val
+		{
+			rect	310 - ( "gui::player_gravitypct" * 115 ),420,115,59
+			visible	1
+			shear	0,-.22
+			windowDef gravity_val
+			{
+				rect	-120 + ( "gui::player_gravitypct" * 115 ),0,125,59
+				visible	1
+				background	"gfx/guis/hud/valbar"
+				matcolor	0.701,0.815,0.431,0.35
+				shear	0,-.22
+			}
+		}
+		windowDef d_gravity_amount
+		{
+			rect	254,427,58,31
+			visible	0
+		}		
+		windowDef gravity_amount
+		{
+			rect	256,429,52,26
+			visible	1
+			forecolor	0.866,0.921,0.764,1
+			text	"gui::player_gravity"
+			textscale	0.5
+			font	"fonts/chain"
+			shear	0,-.22
+			textalign	2
+			notime	1
+			
+			onTime 0
+			{
+				transition "forecolor" "$desktop::white" "$desktop::typecolor" "250" ;
+				transition "rect" "$d_gravity_amount::rect" "$gravity_amount::rect" "250" ;
+				transition "textscale" "0.6" "0.5" "250" ;
+				
+				transition "icon_health::matcolor" "$desktop::white" "$desktop::healthicon" "250" ;
+			}
+		}
+		windowDef icon_gravity
+		{
+			rect	288,458,16,16
+			visible	1
+			background	"gfx/guis/hud/icons/item_health"
+			matcolor	0.658,0.639,0.376,0.6
+		}
+		windowDef gravity_backbar_add
+		{
+			rect	190,420,125,59
+			visible	0
+			background	"gfx/guis/hud/backbar_add"
+			matcolor	1*guitable_10_5[time*0.002],0,0,1
+			shear	0,-.22
+		}
+	}
+
 //-----------------------		
 // armor
 //-----------------------		
