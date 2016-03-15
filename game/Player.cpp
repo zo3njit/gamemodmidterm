@@ -2052,7 +2052,11 @@ void idPlayer::Spawn( void ) {
 //RITUAL END
 
 	itemCosts = static_cast< const idDeclEntityDef * >( declManager->FindType( DECL_ENTITYDEF, "ItemCostConstants", false ) );
+	
+	//set thirdperson view at startup and change height to 20
 	pm_thirdPerson.SetBool(true);
+	pm_thirdPersonHeight.SetFloat(20);
+
 }
 
 /*
