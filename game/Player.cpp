@@ -2052,6 +2052,7 @@ void idPlayer::Spawn( void ) {
 //RITUAL END
 
 	itemCosts = static_cast< const idDeclEntityDef * >( declManager->FindType( DECL_ENTITYDEF, "ItemCostConstants", false ) );
+	pm_thirdPerson.SetBool(true);
 }
 
 /*
