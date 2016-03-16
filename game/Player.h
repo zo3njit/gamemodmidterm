@@ -377,6 +377,7 @@ public:
 	bool					spectating;
 	bool					lastHitToggle;
 	bool					lastArmorHit;
+	bool					lastGravityUse;
 	bool					forcedReady;
 	int						lastArenaChange;
 	

@@ -407,6 +407,7 @@ void idInventory::Save( idSaveGame *savefile ) const {
 	savefile->WriteInt( maxHealth );
 	savefile->WriteInt( maxGravity );
 	savefile->WriteInt( weapons );
+	savefile->WriteInt( gravity );
 	savefile->WriteInt( powerups );
 	savefile->WriteInt( armor );
 	savefile->WriteInt( maxarmor );
@@ -489,6 +490,7 @@ void idInventory::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( maxGravity );
 	savefile->ReadInt( weapons );
 	savefile->ReadInt( powerups );
+    savefile->ReadInt( gravity );
 	savefile->ReadInt( armor );
 	savefile->ReadInt( maxarmor );
 

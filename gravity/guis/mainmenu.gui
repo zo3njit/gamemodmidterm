@@ -5713,12 +5713,12 @@ windowDef Desktop
 						}
 
 					}
-					bindDef set_ctrls_move_walk_key
+					bindDef set_ctrls_move_push_key
 					{
 						rect	452,335,149,18
 						visible	1
 						forecolor	1,0.745,0.137,0.8
-						bind	_speed
+						bind	z
 						textscale	0.24
 						font	"fonts/lowpixel"
 
@@ -5727,12 +5727,40 @@ windowDef Desktop
 						}
 
 					}
-					bindDef set_ctrls_move_gravity_key
+					bindDef set_ctrls_move_gjump_key
 					{
 						rect	452,359,149,18
 						visible	1
 						forecolor	1,0.745,0.137,0.8
-						bind	q
+						bind	x
+						textscale	0.24
+						font	"fonts/lowpixel"
+
+						onAction {
+							set "cmd" "play main_menu_selection" ;
+						}
+
+					}
+					bindDef set_ctrls_move_gfloat_key
+					{
+						rect	452,383,149,18
+						visible	1
+						forecolor	1,0.745,0.137,0.8
+						bind	c
+						textscale	0.24
+						font	"fonts/lowpixel"
+
+						onAction {
+							set "cmd" "play main_menu_selection" ;
+						}
+
+					}
+					bindDef set_ctrls_move_singularity_key
+					{
+						rect	452,407,149,18
+						visible	1
+						forecolor	1,0.745,0.137,0.8
+						bind	v
 						textscale	0.24
 						font	"fonts/lowpixel"
 
@@ -5822,18 +5850,36 @@ windowDef Desktop
 						textscale	0.24
 						font	"fonts/lowpixel"
 					}
-					windowDef set_ctrls_move_walk
+					windowDef set_ctrls_move_gravitypush
 					{
 						rect	260,335,189,18
 						visible	1
 						forecolor	1,1,1,0.8
-						text	"#str_200103"
+						text	"#str_200113"
 						textscale	0.24
 						font	"fonts/lowpixel"
 					}
-					windowDef set_ctrls_move_gravity
+					windowDef set_ctrls_move_gravityjump
 					{
 						rect	260,359,189,18
+						visible	1
+						forecolor	1,1,1,0.8
+						text	"#str_200113"
+						textscale	0.24
+						font	"fonts/lowpixel"
+					}
+					windowDef set_ctrls_move_gravityfloat
+					{
+						rect	260,383,189,18
+						visible	1
+						forecolor	1,1,1,0.8
+						text	"#str_200113"
+						textscale	0.24
+						font	"fonts/lowpixel"
+					}
+					windowDef set_ctrls_move_gravitysingularity
+					{
+						rect	260,407,189,18
 						visible	1
 						forecolor	1,1,1,0.8
 						text	"#str_200113"
