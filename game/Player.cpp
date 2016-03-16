@@ -276,6 +276,8 @@ void idInventory::GetPersistantData( idDict &dict ) {
 
 	// armor
 	dict.SetInt( "armor", armor );
+
+	//gravity
 	dict.SetInt( "gravity", gravity );
 
 	// ammo
@@ -2148,6 +2150,7 @@ void idPlayer::Save( idSaveGame *savefile ) const {
  	savefile->WriteBool( doingDeathSkin );
  	savefile->WriteInt( nextHealthPulse );
  	savefile->WriteInt( nextArmorPulse );
+	savefile->WriteInt( nextGravityPulse );
  	savefile->WriteBool( hiddenWeapon );
 
 //	savefile->WriteInt( spectator );						// Don't save MP stuff
@@ -2420,6 +2423,7 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( deathClearContentsTime );
  	savefile->ReadBool( doingDeathSkin );
  	savefile->ReadInt( nextHealthPulse );
+	savefile->ReadInt( nextGravityPulse );
  	savefile->ReadInt( nextArmorPulse );
  	savefile->ReadBool( hiddenWeapon );
 
