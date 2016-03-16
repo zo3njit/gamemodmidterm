@@ -476,6 +476,13 @@ void GiveStuffToPlayer( idPlayer* player, const char* name, const char* value )
 			return;
 		}
 	}
+
+	if ( give_all || idStr::Icmp( name, "gravity" ) == 0 ) {
+		player->inventory.gravity = player->inventory.maxGravity;
+		if ( !give_all ) {
+			return;
+		}
+	}
 // RAVEN BEGIN
 	if (idStr::Icmp(name, "quad") == 0) {
 		player->GivePowerUp( POWERUP_QUADDAMAGE, SEC2MS( 30.0f ) );

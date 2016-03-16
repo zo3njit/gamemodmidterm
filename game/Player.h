@@ -25,6 +25,7 @@ extern const idEventDef EV_Player_SelectWeapon;
 extern const idEventDef EV_Player_Freeze;
 extern const idEventDef EV_SpectatorTouch;
 extern const idEventDef EV_Player_SetArmor;
+extern const idEventDef EV_Player_SetGravity;
 extern const idEventDef EV_Player_SetExtraProjPassEntity;
 extern const idEventDef EV_Player_DamageEffect;
 
@@ -195,6 +196,7 @@ const int	ASYNC_PLAYER_TOURNEY_STATUS_BITS = idMath::BitsForInteger( PTS_NUM_STA
 class idInventory {
 public:
 	int						maxHealth;
+	int						maxGravity;
 	int						weapons;
 // RITUAL BEGIN
 // squirrel: Mode-agnostic buymenus
@@ -202,6 +204,7 @@ public:
 // RITUAL END
 	int						powerups;
 	int						armor;
+	int						gravity;
 	int						maxarmor;
 	int						ammo[ MAX_AMMO ];
 	int						clip[ MAX_WEAPONS ];
@@ -352,6 +355,7 @@ public:
 	int						deathClearContentsTime;
  	bool					doingDeathSkin;
 	int						nextHealthPulse;	// time when health will tick down
+	int						nextGravityPulse;
 	int						nextAmmoRegenPulse[ MAX_AMMO ];	// time when ammo will regenerate
 	int						nextArmorPulse;		// time when armor will tick down
 	bool					hiddenWeapon;		// if the weapon is hidden ( in noWeapons maps )
@@ -1099,6 +1103,7 @@ private:
 	// mekberg:	added sethealth
 	void					Event_SetHealth					( float newHealth );
 	void					Event_SetArmor					( float newArmor );
+	void					Event_SetGravity				( float newGravity );
 
 	void					Event_SetExtraProjPassEntity( idEntity* _extraProjPassEntity );
 	void					Event_DamageEffect			( const char *damageDefName, idEntity* _damageFromEnt  );

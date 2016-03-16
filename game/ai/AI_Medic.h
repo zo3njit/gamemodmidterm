@@ -61,6 +61,7 @@ private:
 	int					minHealValue;
 	int					healedAmount;
 	int					maxPatientValue;
+	int					maxPatientGravity;
 
 	int					healDebounceInterval;
 	int					healDebounceTime;

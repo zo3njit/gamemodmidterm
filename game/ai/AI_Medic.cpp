@@ -356,11 +356,13 @@ void rvAIMedic::SetHealValues( idPlayer* player )
 	{
 		curHealValue = player->inventory.armor;
 		maxPatientValue = player->inventory.maxarmor;
+		maxPatientGravity = player->inventory.maxGravity;
 	}
 	else
 	{
 		curHealValue = player->health;
 		maxPatientValue = player->inventory.maxHealth;
+		maxPatientGravity = player->inventory.maxGravity;
 	}
 }
 

@@ -64,6 +64,7 @@ const int SPECTATE_RAISE = 25;
 
 const int	HEALTH_PULSE		= 1000;			// Regen rate and heal leak rate (for health > 100)
 const int	ARMOR_PULSE			= 1000;			// armor ticking down due to being higher than maxarmor
+const int	GRAVITY_PULSE		= 1000;
 const int	AMMO_REGEN_PULSE	= 1000;			// ammo regen in Arena CTF
 const int	POWERUP_BLINKS		= 5;			// Number of times the powerup wear off sound plays
 const int	POWERUP_BLINK_TIME	= 1000;			// Time between powerup wear off sounds
@@ -104,6 +105,7 @@ const idEventDef EV_Player_GetAmmoData( "getAmmoData", "s", 'v');
 const idEventDef EV_Player_RefillAmmo( "refillAmmo" );
 const idEventDef EV_Player_SetExtraProjPassEntity( "setExtraProjPassEntity", "E" );
 const idEventDef EV_Player_SetArmor( "setArmor", "f" );
+const idEventDef EV_Player_SetGravity( "setGravity", "f" );
 const idEventDef EV_Player_DamageEffect( "damageEffect", "sE" );
 const idEventDef EV_Player_AllowFallDamage( "allowFallDamage", "d" );
 
@@ -159,6 +161,7 @@ CLASS_DECLARATION( idActor, idPlayer )
 	EVENT( AI_SetHealth,					idPlayer::Event_SetHealth )
 //MCG: setArmor
 	EVENT( EV_Player_SetArmor,				idPlayer::Event_SetArmor )
+	EVENT( EV_Player_SetGravity,			idPlayer::Event_SetGravity )
 // RAVEN END;
 	EVENT( EV_Player_SetExtraProjPassEntity,idPlayer::Event_SetExtraProjPassEntity )
 //MCG: direct damage
@@ -200,8 +203,10 @@ void idInventory::Clear( void ) {
 	weapons				= 0;
 	carryOverWeapons	= 0;
 	powerups			= 0;
+	gravity				= 0;
 	armor				= 0;
 	maxarmor			= 0;
+	maxGravity			= 0;
 	secretAreasDiscovered = 0;
 
 	memset( ammo, 0, sizeof( ammo ) );
@@ -271,6 +276,7 @@ void idInventory::GetPersistantData( idDict &dict ) {
 
 	// armor
 	dict.SetInt( "armor", armor );
+	dict.SetInt( "gravity", gravity );
 
 	// ammo
 	for( i = 0; i < MAX_AMMOTYPES; i++ ) {
@@ -336,6 +342,8 @@ void idInventory::RestoreInventory( idPlayer *owner, const idDict &dict ) {
 	maxHealth		= dict.GetInt( "maxhealth", "100" );
 	armor			= dict.GetInt( "armor", "50" );
 	maxarmor		= dict.GetInt( "maxarmor", "100" );
+	gravity			= dict.GetInt( "gravity", "50" );
+	maxGravity		= dict.GetInt( "maxgravity", "100");
 
 	// ammo
 	for( i = 0; i < MAX_AMMOTYPES; i++ ) {
@@ -397,6 +405,7 @@ void idInventory::Save( idSaveGame *savefile ) const {
 	int i;
 
 	savefile->WriteInt( maxHealth );
+	savefile->WriteInt( maxGravity );
 	savefile->WriteInt( weapons );
 	savefile->WriteInt( powerups );
 	savefile->WriteInt( armor );
@@ -477,6 +486,7 @@ void idInventory::Restore( idRestoreGame *savefile ) {
 	int i, num;
 
 	savefile->ReadInt( maxHealth );
+	savefile->ReadInt( maxGravity );
 	savefile->ReadInt( weapons );
 	savefile->ReadInt( powerups );
 	savefile->ReadInt( armor );
@@ -890,6 +900,10 @@ bool idInventory::Give( idPlayer *owner, const idDict &spawnArgs, const char *st
 		}
 	} else 	if ( !idStr::Icmp( statname, "health" ) ) {
 		if ( owner->health >= maxHealth ) {
+			return false;
+		}
+	} else 	if ( !idStr::Icmp( statname, "gravity" ) ) {
+		if ( gravity >= maxGravity * 2 ) {
 			return false;
 		}
 	} else if ( idStr::FindText( statname, "inclip_" ) == 0 ) {
@@ -2816,6 +2830,10 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 		nextHealthPulse = gameLocal.time + HEALTH_PULSE;
 	}
 	
+	if ( gravity > inventory.maxGravity ) {
+		nextGravityPulse = gameLocal.time + GRAVITY_PULSE;
+	}
+
 	if ( inventory.armor > inventory.maxarmor ) {
 		nextArmorPulse = gameLocal.time + ARMOR_PULSE;
 	}		
@@ -3400,6 +3418,17 @@ void idPlayer::UpdateHudStats( idUserInterface *_hud ) {
 		_hud->SetStateInt	( "player_health", health < -100 ? -100 : health );
 		_hud->SetStateFloat	( "player_healthpct", idMath::ClampFloat ( 0.0f, 1.0f, (float)health / (float)inventory.maxHealth ) );
 		_hud->HandleNamedEvent ( "updateHealth" );
+	}
+
+	//--------------------------
+	//Gravity hud status
+	//--------------------------
+	temp = _hud->State().GetInt ( "player_gravity", "-1" );
+	if ( temp != inventory.gravity ) {		
+		_hud->SetStateInt   ( "player_gravityDelta", temp == -1 ? 0 : (temp - inventory.gravity) );
+		_hud->SetStateInt	( "player_gravity", inventory.gravity );
+		_hud->SetStateFloat	( "player_gravitypct", idMath::ClampFloat ( 0.0f, 1.0f, (float)inventory.gravity / (float)inventory.maxGravity ) );
+		_hud->HandleNamedEvent ( "updateGravity" );
 	}
 		
 	temp = _hud->State().GetInt ( "player_armor", "-1" );
@@ -4070,10 +4099,12 @@ bool idPlayer::Give( const char *statname, const char *value, bool dropped ) {
 	}
 
 	int boundaryHealth = inventory.maxHealth;
+	int boundaryGravity = inventory.maxGravity;
 	int boundaryArmor = inventory.maxarmor;
 	if( PowerUpActive( POWERUP_GUARD ) ) {
 		boundaryHealth = inventory.maxHealth / 2;
 		boundaryArmor = inventory.maxarmor / 2;
+		boundaryGravity = inventory.maxGravity / 2;
 	}
 	if( PowerUpActive( POWERUP_SCOUT ) ) {
 		boundaryArmor = 0;
@@ -4715,6 +4746,7 @@ bool idPlayer::GivePowerUp( int powerup, int time, bool team ) {
 			nextHealthPulse = gameLocal.time + HEALTH_PULSE;
 			inventory.maxHealth = 200;
 			inventory.maxarmor = 200;
+			inventory.maxGravity = 200;
 
 			break;
 		}
@@ -4962,6 +4994,14 @@ void idPlayer::UpdatePowerUps( void ) {
 		if ( inventory.armor > inventory.maxarmor ) { 
 			nextArmorPulse += ARMOR_PULSE;
 			inventory.armor--;
+		}		
+	}
+
+	// Tick Gravity down if greater than max gravity
+	if ( !gameLocal.isClient && gameLocal.time > nextGravityPulse ) {
+		if ( inventory.armor > inventory.maxarmor ) { 
+			nextGravityPulse += GRAVITY_PULSE;
+			inventory.gravity--;
 		}		
 	}
 		
@@ -11184,6 +11224,14 @@ idPlayer::Event_SetHealth
 */
 void idPlayer::Event_SetHealth( float newHealth ) {
 	health = idMath::ClampInt( 1 , inventory.maxHealth, newHealth );
+}
+/*
+=============
+idPlayer::Event_SetGravity
+=============
+*/
+void idPlayer::Event_SetGravity( float newGravity ) {
+	inventory.gravity = idMath::ClampInt( 1 , inventory.maxGravity, newGravity );
 }
 /*
 =============
