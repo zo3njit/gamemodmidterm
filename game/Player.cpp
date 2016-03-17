@@ -4457,6 +4457,8 @@ void idPlayer::StartPowerUpEffect( int powerup ) {
 			powerupEffectTime = gameLocal.time;
 			powerupEffectType = POWERUP_QUADDAMAGE;
 
+			
+
 			break;
 		}
 
@@ -4483,6 +4485,8 @@ void idPlayer::StartPowerUpEffect( int powerup ) {
 				powerupEffect = gameLocal.GetEffect( spawnArgs, "fx_regeneration" );			
 				powerupEffectTime = gameLocal.time;
 				powerupEffectType = POWERUP_REGENERATION;
+
+				physicsObj.SetMaxJumpHeight(100); //add gravity jump
 			}
 
 			break;
@@ -4492,6 +4496,8 @@ void idPlayer::StartPowerUpEffect( int powerup ) {
 			powerUpOverlay = hasteOverlay;
 
 			hasteEffect = PlayEffect( "fx_haste", GetPhysics()->GetOrigin(), GetPhysics()->GetAxis(), true );
+			//physicsObj.SetMaxJumpHeight(100); //add gravity jump
+			pm_jumpheight.SetFloat(120);	//add gravity jump
 			break;
 		}
 		

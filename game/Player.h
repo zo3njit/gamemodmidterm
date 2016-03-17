@@ -121,10 +121,10 @@ typedef struct {
 // powerups
 enum {
 	// standard powerups
-	POWERUP_QUADDAMAGE = 0, 
-	POWERUP_HASTE,
-	POWERUP_REGENERATION,
-	POWERUP_INVISIBILITY,
+	POWERUP_QUADDAMAGE = 0, // gravity push
+	POWERUP_HASTE,  //gravity jump
+	POWERUP_REGENERATION, //gravity 
+	POWERUP_INVISIBILITY, //gravity hold
 		
 	// ctf powerups
 	POWERUP_CTF_MARINEFLAG,
